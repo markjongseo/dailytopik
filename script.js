@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Update all elements with data-lang attributes
         document.querySelectorAll(`[data-lang-${lang}]`).forEach(element => {
-            element.textContent = element.getAttribute(`data-lang-${lang}`);
+            element.innerHTML = element.getAttribute(`data-lang-${lang}`);
         });
 
         // Update placeholder attributes
