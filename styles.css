@@ -1,0 +1,495 @@
+/* Global Styles */
+:root {
+    --primary-color: #4a6fa5;
+    --secondary-color: #ff9f43;
+    --accent-color: #ee5253;
+    --dark-color: #2c3e50;
+    --light-color: #f5f6fa;
+    --text-color: #333;
+    --wechat-color: #07c160;
+    --wechat-bg: #f1f1f1;
+    --font-primary: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-primary);
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--light-color);
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+img {
+    max-width: 100%;
+}
+
+a {
+    text-decoration: none;
+    color: var(--primary-color);
+}
+
+/* Header */
+header {
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 1rem 0;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+}
+
+header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.language-selector select {
+    padding: 5px 10px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    background-color: white;
+    font-family: var(--font-primary);
+}
+
+/* Hook Section */
+.hook {
+    padding: 8rem 0 4rem;
+    background: linear-gradient(135deg, var(--primary-color) 0%, #2c3e50 100%);
+    color: white;
+    text-align: center;
+}
+
+.hook h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.hook .subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.price-tag {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--secondary-color);
+    background-color: rgba(255, 255, 255, 0.1);
+    display: inline-block;
+    padding: 0.5rem 2rem;
+    border-radius: 50px;
+    margin-bottom: 2rem;
+    border: 2px solid var(--secondary-color);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.cta-button a {
+    display: inline-block;
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+}
+
+.cta-button a:hover {
+    background-color: #f39c12;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.wechat-preview {
+    max-width: 500px;
+    margin: 0 auto;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* Story Section */
+.story {
+    padding: 5rem 0;
+    background-color: white;
+}
+
+.story h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: var(--dark-color);
+    font-size: 2rem;
+}
+
+.story > .container > p {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto 3rem auto;
+    font-size: 1.1rem;
+}
+
+.pain-points {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-bottom: 4rem;
+}
+
+.pain-point {
+    flex: 1;
+    min-width: 250px;
+    text-align: center;
+    padding: 2rem;
+    margin: 1rem;
+    background-color: var(--light-color);
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+}
+
+.pain-point:hover {
+    transform: translateY(-10px);
+}
+
+.pain-point i {
+    font-size: 2.5rem;
+    color: var(--accent-color);
+    margin-bottom: 1rem;
+}
+
+.pain-point h3 {
+    margin-bottom: 1rem;
+    color: var(--dark-color);
+}
+
+/* WeChat Examples Carousel */
+.wechat-examples {
+    margin-top: 3rem;
+    position: relative;
+}
+
+.carousel {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    padding: 2rem 0;
+}
+
+.carousel::-webkit-scrollbar {
+    display: none;
+}
+
+.phone-mockup {
+    flex: 0 0 auto;
+    width: 280px;
+    margin: 0 1rem;
+    scroll-snap-align: center;
+}
+
+.phone-screen {
+    background-color: var(--wechat-bg);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    padding: 1rem;
+    height: 500px;
+    position: relative;
+}
+
+.wechat-message {
+    background-color: white;
+    border-radius: 15px;
+    overflow: hidden;
+    height: 100%;
+}
+
+.message-header {
+    background-color: var(--wechat-color);
+    color: white;
+    padding: 1rem;
+    text-align: center;
+    font-weight: 600;
+}
+
+.message-content {
+    padding: 1.5rem;
+}
+
+.message-content h4 {
+    margin-bottom: 0.5rem;
+    color: var(--dark-color);
+}
+
+.example-question {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    font-size: 0.9rem;
+}
+
+.example-question p:first-child {
+    font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.example-question small {
+    color: #666;
+    display: block;
+    margin-top: 5px;
+}
+
+.carousel-controls {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.carousel-controls button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin: 0 1rem;
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.carousel-controls button:hover {
+    background-color: var(--dark-color);
+    transform: scale(1.1);
+}
+
+/* Offer Section */
+.offer {
+    padding: 5rem 0;
+    background-color: #f5f6fa;
+    text-align: center;
+}
+
+.offer h2 {
+    margin-bottom: 1rem;
+    color: var(--dark-color);
+    font-size: 2rem;
+}
+
+.offer > .container > p {
+    margin-bottom: 3rem;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.benefits {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 3rem;
+}
+
+.benefit {
+    display: flex;
+    align-items: center;
+    margin: 0.5rem 1rem;
+    text-align: left;
+}
+
+.benefit i {
+    color: var(--wechat-color);
+    font-size: 1.5rem;
+    margin-right: 1rem;
+}
+
+/* Form Styles */
+#signup-form {
+    max-width: 500px;
+    margin: 0 auto;
+    background-color: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-family: var(--font-primary);
+    font-size: 1rem;
+}
+
+.submit-button {
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 1rem;
+    border-radius: 5px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+}
+
+.submit-button:hover {
+    background-color: #f39c12;
+}
+
+.form-note {
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    color: #777;
+}
+
+/* Success Message */
+.success-message {
+    text-align: center;
+    padding: 2rem;
+}
+
+.success-message h3 {
+    font-size: 1.5rem;
+    margin: 1rem 0;
+    color: var(--dark-color);
+}
+
+.success-message p {
+    color: #555;
+    margin-bottom: 0.5rem;
+}
+
+/* Footer */
+footer {
+    background-color: var(--dark-color);
+    color: white;
+    padding: 2rem 0;
+    text-align: center;
+}
+
+footer .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.social-links {
+    margin-top: 1rem;
+}
+
+.social-links a {
+    color: white;
+    font-size: 1.5rem;
+    margin: 0 0.5rem;
+    transition: color 0.3s ease;
+}
+
+.social-links a:hover {
+    color: var(--secondary-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hook h1 {
+        font-size: 2rem;
+    }
+    
+    .pain-points {
+        flex-direction: column;
+    }
+    
+    .pain-point {
+        margin: 1rem 0;
+    }
+    
+    .phone-mockup {
+        width: 250px;
+    }
+    
+    .phone-screen {
+        height: 450px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hook {
+        padding: 6rem 0 3rem;
+    }
+    
+    .hook h1 {
+        font-size: 1.7rem;
+    }
+    
+    .price-tag {
+        font-size: 1.4rem;
+        padding: 0.4rem 1.5rem;
+    }
+    
+    .cta-button a {
+        padding: 0.8rem 1.5rem;
+    }
+    
+    .phone-mockup {
+        width: 220px;
+    }
+    
+    .phone-screen {
+        height: 400px;
+    }
+    
+    .carousel-controls button {
+        width: 40px;
+        height: 40px;
+    }
+} 
