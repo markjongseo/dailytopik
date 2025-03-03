@@ -65,6 +65,17 @@ header .container {
     align-items: center;
 }
 
+.logo .wechat-text {
+    color: var(--wechat-color);
+    font-size: 1rem;
+    margin-left: 5px;
+    font-weight: 500;
+}
+
+.logo .wechat-text i {
+    margin-right: 3px;
+}
+
 .logo-image {
     height: 30px;
     margin-right: 10px;
@@ -373,21 +384,22 @@ header .container {
 .benefits {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
-    margin-bottom: 3rem;
+    justify-content: space-around;
+    margin: 2rem 0;
 }
 
 .benefit {
     display: flex;
     align-items: center;
-    margin: 0.5rem 1rem;
-    text-align: left;
+    margin: 1rem;
+    text-align: center;
 }
 
 .benefit i {
-    color: var(--primary-color);
     font-size: 1.5rem;
-    margin-right: 1rem;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+    margin-right: 10px;
 }
 
 /* Form Styles */
@@ -525,7 +537,7 @@ footer .container {
     }
     
     .pain-point {
-        margin: 1rem 0;
+        width: 100%;
     }
     
     .phone-mockup {
@@ -535,24 +547,41 @@ footer .container {
     .phone-screen {
         height: 450px;
     }
+    
+    /* 모바일에서 benefits 목록 정렬 수정 */
+    .benefits {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .benefit {
+        width: 100%;
+        text-align: left;
+        margin-bottom: 12px;
+    }
+    
+    .benefit i {
+        margin-right: 10px;
+    }
 }
 
 @media (max-width: 480px) {
     .hook {
-        padding: 6rem 0 3rem;
+        padding: 2rem 0;
     }
     
     .hook h1 {
-        font-size: 1.7rem;
+        font-size: 1.5rem;
     }
     
     .price-tag {
-        font-size: 1.4rem;
-        padding: 0.4rem 1.5rem;
+        font-size: 1.2rem;
+        padding: 0.5rem 1rem;
     }
     
     .cta-button a {
-        padding: 0.8rem 1.5rem;
+        padding: 0.7rem 1.5rem;
     }
     
     .phone-mockup {
@@ -569,13 +598,22 @@ footer .container {
         width: 40px;
         height: 40px;
     }
-
+    
     .carousel {
         padding: 1rem 0;
     }
     
     .example-question {
         padding: 0.8rem;
+    }
+    
+    /* 480px 이하에서 benefits 추가 스타일 */
+    .benefits {
+        margin: 1rem 0;
+    }
+    
+    .benefit {
+        margin: 0.8rem 0;
     }
 }
 
