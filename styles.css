@@ -1,14 +1,14 @@
 /* Global Styles */
 :root {
-    --primary-color: #4a6fa5;
-    --secondary-color: #ff9f43;
-    --accent-color: #ee5253;
-    --dark-color: #2c3e50;
-    --light-color: #f5f6fa;
+    --primary-color: #1e80ff; /* Zhihu blue */
+    --secondary-color: #ff7b73; /* Coral pink */
+    --accent-color: #ffcb47; /* Warm yellow */
+    --dark-color: #0f2e4d; /* Deep blue */
+    --light-color: #e6f2ff; /* Light blue bg */
     --text-color: #333;
     --wechat-color: #07c160;
     --wechat-bg: #f1f1f1;
-    --font-primary: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --font-primary: 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 * {
@@ -74,7 +74,7 @@ header .container {
 /* Hook Section */
 .hook {
     padding: 8rem 0 4rem;
-    background: linear-gradient(135deg, var(--primary-color) 0%, #2c3e50 100%);
+    background: linear-gradient(135deg, var(--primary-color) 0%, #0f2e4d 100%);
     color: white;
     text-align: center;
 }
@@ -96,13 +96,13 @@ header .container {
 .price-tag {
     font-size: 1.8rem;
     font-weight: bold;
-    color: var(--secondary-color);
-    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    background-color: var(--secondary-color);
     display: inline-block;
     padding: 0.5rem 2rem;
     border-radius: 50px;
     margin-bottom: 2rem;
-    border: 2px solid var(--secondary-color);
+    border: 2px solid rgba(255, 255, 255, 0.3);
     text-shadow: 0 1px 2px rgba(0,0,0,0.2);
     animation: pulse 2s infinite;
 }
@@ -121,8 +121,8 @@ header .container {
 
 .cta-button a {
     display: inline-block;
-    background-color: var(--secondary-color);
-    color: white;
+    background-color: var(--accent-color);
+    color: var(--dark-color);
     padding: 1rem 2rem;
     border-radius: 50px;
     font-weight: 600;
@@ -132,7 +132,7 @@ header .container {
 }
 
 .cta-button a:hover {
-    background-color: #f39c12;
+    background-color: #ffd66e;
     transform: translateY(-3px);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
@@ -154,7 +154,7 @@ header .container {
 .story h2 {
     text-align: center;
     margin-bottom: 1.5rem;
-    color: var(--dark-color);
+    color: var(--primary-color);
     font-size: 2rem;
 }
 
@@ -190,7 +190,7 @@ header .container {
 
 .pain-point i {
     font-size: 2.5rem;
-    color: var(--accent-color);
+    color: var(--secondary-color);
     margin-bottom: 1rem;
 }
 
@@ -223,16 +223,25 @@ header .container {
     width: 280px;
     margin: 0 1rem;
     scroll-snap-align: center;
+    position: relative;
+    transform-style: preserve-3d;
+    perspective: 1000px;
 }
 
 .phone-screen {
-    background-color: var(--wechat-bg);
+    background-color: #e6f2ff;
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
     padding: 1rem;
     height: 500px;
     position: relative;
+    transform: translateZ(0);
+    transition: transform 0.3s ease;
+}
+
+.phone-mockup:hover .phone-screen {
+    transform: translateZ(10px);
 }
 
 .wechat-message {
@@ -240,10 +249,11 @@ header .container {
     border-radius: 15px;
     overflow: hidden;
     height: 100%;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
 }
 
 .message-header {
-    background-color: var(--wechat-color);
+    background-color: var(--primary-color);
     color: white;
     padding: 1rem;
     text-align: center;
@@ -256,7 +266,7 @@ header .container {
 
 .message-content h4 {
     margin-bottom: 0.5rem;
-    color: var(--dark-color);
+    color: var(--primary-color);
 }
 
 .example-question {
@@ -309,13 +319,39 @@ header .container {
 /* Offer Section */
 .offer {
     padding: 5rem 0;
-    background-color: #f5f6fa;
+    background-color: var(--light-color);
     text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.offer::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 200px;
+    height: 200px;
+    background-color: var(--secondary-color);
+    opacity: 0.1;
+    border-radius: 50%;
+}
+
+.offer::after {
+    content: '';
+    position: absolute;
+    bottom: -70px;
+    left: -70px;
+    width: 250px;
+    height: 250px;
+    background-color: var(--accent-color);
+    opacity: 0.1;
+    border-radius: 50%;
 }
 
 .offer h2 {
     margin-bottom: 1rem;
-    color: var(--dark-color);
+    color: var(--primary-color);
     font-size: 2rem;
 }
 
@@ -341,7 +377,7 @@ header .container {
 }
 
 .benefit i {
-    color: var(--wechat-color);
+    color: var(--primary-color);
     font-size: 1.5rem;
     margin-right: 1rem;
 }
@@ -354,6 +390,8 @@ header .container {
     padding: 2rem;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    position: relative;
+    z-index: 1;
 }
 
 .form-group {
@@ -364,14 +402,35 @@ header .container {
 .form-group select {
     width: 100%;
     padding: 1rem;
-    border: 1px solid #ddd;
+    border: 1px solid #e0e0e0;
     border-radius: 5px;
     font-family: var(--font-primary);
     font-size: 1rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(30, 128, 255, 0.1);
+}
+
+/* 에러 상태 스타일 */
+.form-group input.error {
+    border-color: #ff3b30;
+    background-color: #fff2f2;
+}
+
+.form-group .error-message {
+    display: none;
+    color: #ff3b30;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
 }
 
 .submit-button {
-    background-color: var(--secondary-color);
+    background-color: var(--primary-color);
     color: white;
     border: none;
     padding: 1rem;
@@ -384,13 +443,17 @@ header .container {
 }
 
 .submit-button:hover {
-    background-color: #f39c12;
+    background-color: #0066e2;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(30, 128, 255, 0.3);
 }
 
 .form-note {
     margin-top: 1rem;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: #777;
+    text-align: center;
+    line-height: 1.5;
 }
 
 /* Success Message */
@@ -402,7 +465,7 @@ header .container {
 .success-message h3 {
     font-size: 1.5rem;
     margin: 1rem 0;
-    color: var(--dark-color);
+    color: var(--primary-color);
 }
 
 .success-message p {

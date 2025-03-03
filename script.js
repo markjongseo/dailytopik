@@ -1,156 +1,197 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Language Switching Functionality
-    const languageSelect = document.getElementById('language');
+    // Language selector functionality
+    const languageSelector = document.getElementById('language-selector');
     
-    // Initialize language based on dropdown
-    setLanguage(languageSelect.value);
-    
-    // Handle language change
-    languageSelect.addEventListener('change', function() {
+    // Initialize with Chinese by default
+    setLanguage('zh');
+
+    // Event listener for language change
+    languageSelector.addEventListener('change', function() {
         setLanguage(this.value);
     });
-    
-    // Function to switch language content
+
     function setLanguage(lang) {
+        // Update language attribute on the HTML tag
+        document.documentElement.setAttribute('lang', lang === 'zh' ? 'zh-CN' : 'ko');
+        
         // Update all elements with data-lang attributes
-        document.querySelectorAll('[data-lang-' + lang + ']').forEach(function(element) {
-            element.textContent = element.getAttribute('data-lang-' + lang);
+        document.querySelectorAll(`[data-lang-${lang}]`).forEach(element => {
+            element.textContent = element.getAttribute(`data-lang-${lang}`);
         });
-        
-        // Update placeholders
-        document.querySelectorAll('[data-lang-' + lang + '-placeholder]').forEach(function(element) {
-            element.placeholder = element.getAttribute('data-lang-' + lang + '-placeholder');
+
+        // Update placeholders for input fields
+        document.querySelectorAll(`[data-lang-${lang}-placeholder]`).forEach(element => {
+            element.setAttribute('placeholder', element.getAttribute(`data-lang-${lang}-placeholder`));
         });
-        
-        // Update select options
-        document.querySelectorAll('option[data-lang-' + lang + ']').forEach(function(option) {
-            option.textContent = option.getAttribute('data-lang-' + lang);
+
+        // Update selected option text
+        document.querySelectorAll('select option').forEach(option => {
+            if (option.hasAttribute(`data-lang-${lang}`)) {
+                option.textContent = option.getAttribute(`data-lang-${lang}`);
+            }
         });
-        
-        // Set html lang attribute
-        document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'ko';
+
+        // Save language preference to localStorage
+        localStorage.setItem('preferredLanguage', lang);
+
+        // Update form validation messages based on language
+        updateFormValidationMessages(lang);
     }
 
     // Carousel functionality
     const carousel = document.querySelector('.carousel');
-    const phoneScreens = document.querySelectorAll('.phone-mockup');
-    const prevButton = document.getElementById('prev');
-    const nextButton = document.getElementById('next');
-    
-    let currentIndex = 0;
-    const screenWidth = phoneScreens[0].offsetWidth + parseInt(getComputedStyle(phoneScreens[0]).marginLeft) * 2;
-    
-    // Initialize carousel
-    updateCarousel();
-    
-    prevButton.addEventListener('click', function() {
-        if (currentIndex > 0) {
-            currentIndex--;
-            updateCarousel();
-        }
-    });
-    
-    nextButton.addEventListener('click', function() {
-        if (currentIndex < phoneScreens.length - 1) {
-            currentIndex++;
-            updateCarousel();
-        }
-    });
-    
-    // Update carousel position
-    function updateCarousel() {
-        carousel.scrollTo({
-            left: currentIndex * screenWidth,
-            behavior: 'smooth'
-        });
-        
-        // Update button states
-        prevButton.disabled = currentIndex === 0;
-        nextButton.disabled = currentIndex === phoneScreens.length - 1;
-        
-        // Visual feedback for disabled buttons
-        if (prevButton.disabled) {
-            prevButton.style.opacity = '0.5';
-        } else {
-            prevButton.style.opacity = '1';
-        }
-        
-        if (nextButton.disabled) {
-            nextButton.style.opacity = '0.5';
-        } else {
-            nextButton.style.opacity = '1';
-        }
-    }
-    
-    // Form handling
-    const contactMethodSelect = document.getElementById('contact-method');
-    const emailInput = document.getElementById('email-input');
-    const phoneInput = document.getElementById('phone-input');
-    const signupForm = document.getElementById('signup-form');
-    
-    // Toggle between email and phone input fields
-    contactMethodSelect.addEventListener('change', function() {
-        if (this.value === 'email') {
-            emailInput.style.display = 'block';
-            phoneInput.style.display = 'none';
-            document.getElementById('email').setAttribute('required', '');
-            document.getElementById('phone').removeAttribute('required');
-        } else {
-            emailInput.style.display = 'none';
-            phoneInput.style.display = 'block';
-            document.getElementById('phone').setAttribute('required', '');
-            document.getElementById('email').removeAttribute('required');
-        }
-    });
-    
-    // Form submission
-    signupForm.addEventListener('submit', function(event) {
-        event.preventDefault();
-        
-        const name = document.getElementById('name').value;
-        const contactMethod = contactMethodSelect.value;
-        const contactValue = contactMethod === 'email' 
-            ? document.getElementById('email').value 
-            : document.getElementById('phone').value;
-        
-        // Here you would typically send this data to your server
-        // For demo purposes, we'll just show a success message
-        
-        const formContainer = signupForm.parentNode;
-        const currentLang = languageSelect.value;
-        
-        if (currentLang === 'zh') {
-            formContainer.innerHTML = `
-                <div class="success-message">
-                    <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--wechat-color); margin-bottom: 1rem;"></i>
-                    <h3>谢谢您，${name}！</h3>
-                    <p>我们已收到您的${contactMethod === 'email' ? '电子邮箱' : '手机号码'}（${contactValue}）。</p>
-                    <p>每日TOPIK上线时，我们会立即通知您。</p>
-                </div>
-            `;
-        } else {
-            formContainer.innerHTML = `
-                <div class="success-message">
-                    <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--wechat-color); margin-bottom: 1rem;"></i>
-                    <h3>${name}님, 감사합니다!</h3>
-                    <p>귀하의 ${contactMethod === 'email' ? '이메일' : '전화번호'}(${contactValue})를 받았습니다.</p>
-                    <p>매일 TOPIK이 출시되면 바로 알려드리겠습니다.</p>
-                </div>
-            `;
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const phoneWidth = 280 + 32; // phone width + margin
+
+    // Set initial state
+    let scrollPosition = 0;
+    updateButtonStates();
+
+    prevBtn.addEventListener('click', function() {
+        if (scrollPosition > 0) {
+            scrollPosition -= phoneWidth;
+            carousel.scrollTo({
+                left: scrollPosition,
+                behavior: 'smooth'
+            });
+            updateButtonStates();
         }
     });
 
-    // Auto-scroll to signup form when CTA button is clicked
-    const ctaButton = document.querySelector('.cta-button a');
-    
-    ctaButton.addEventListener('click', function(event) {
-        event.preventDefault();
-        const targetId = this.getAttribute('href').substring(1);
-        const targetElement = document.getElementById(targetId);
+    nextBtn.addEventListener('click', function() {
+        const maxScroll = carousel.scrollWidth - carousel.clientWidth;
+        if (scrollPosition < maxScroll) {
+            scrollPosition += phoneWidth;
+            carousel.scrollTo({
+                left: scrollPosition,
+                behavior: 'smooth'
+            });
+            updateButtonStates();
+        }
+    });
+
+    function updateButtonStates() {
+        prevBtn.classList.toggle('disabled', scrollPosition <= 0);
+        nextBtn.classList.toggle('disabled', scrollPosition >= carousel.scrollWidth - carousel.clientWidth);
         
-        window.scrollTo({
-            top: targetElement.offsetTop,
-            behavior: 'smooth'
+        // Update button colors to give visual feedback
+        prevBtn.style.backgroundColor = scrollPosition <= 0 ? '#ccc' : '';
+        nextBtn.style.backgroundColor = scrollPosition >= carousel.scrollWidth - carousel.clientWidth ? '#ccc' : '';
+    }
+
+    // Contact method selection
+    const contactMethodSelect = document.getElementById('contact-method');
+    const emailGroup = document.getElementById('email-group');
+    const phoneGroup = document.getElementById('phone-group');
+
+    contactMethodSelect.addEventListener('change', function() {
+        const method = this.value;
+        if (method === 'email') {
+            emailGroup.style.display = 'block';
+            phoneGroup.style.display = 'none';
+        } else if (method === 'phone') {
+            emailGroup.style.display = 'none';
+            phoneGroup.style.display = 'block';
+        }
+    });
+
+    // Form validation functionality
+    const signupForm = document.getElementById('signup-form');
+    const emailInput = document.getElementById('email');
+    const phoneInput = document.getElementById('phone');
+    const successMessage = document.querySelector('.success-message');
+    
+    // Set custom form validation messages based on language
+    function updateFormValidationMessages(lang) {
+        const emailValidationMessage = lang === 'zh' ? '请输入有效的电子邮件地址' : '유효한 이메일 주소를 입력하세요';
+        const requiredFieldMessage = lang === 'zh' ? '请至少填写电子邮件或手机号码中的一项' : '이메일 또는 전화번호 중 하나 이상을 입력하세요';
+        
+        emailInput.setAttribute('title', emailValidationMessage);
+        emailInput.dataset.errorMessage = emailValidationMessage;
+        phoneInput.dataset.errorMessage = requiredFieldMessage;
+    }
+    
+    // Initialize validation messages
+    updateFormValidationMessages(languageSelector.value);
+
+    // Form submission handler
+    signupForm.addEventListener('submit', function(e) {
+        // Check if at least one field is filled
+        if (!emailInput.value && !phoneInput.value) {
+            e.preventDefault();
+            const currentLang = languageSelector.value;
+            const errorMessage = currentLang === 'zh' ? 
+                '请至少填写电子邮件或手机号码中的一项' : 
+                '이메일 또는 전화번호 중 하나 이상을 입력하세요';
+            
+            alert(errorMessage);
+            return false;
+        }
+        
+        // If email is filled, validate email format
+        if (emailInput.value && !isValidEmail(emailInput.value)) {
+            e.preventDefault();
+            const currentLang = languageSelector.value;
+            const errorMessage = currentLang === 'zh' ? 
+                '请输入有效的电子邮件地址' : 
+                '유효한 이메일 주소를 입력하세요';
+            
+            alert(errorMessage);
+            emailInput.focus();
+            return false;
+        }
+        
+        // If validation passed, show a temporary message and allow form submission
+        console.log('Form validation passed, submitting...');
+        
+        // You can uncomment the following code if you want to show a loading indicator
+        /*
+        const submitButton = document.querySelector('.submit-button');
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + 
+                                (languageSelector.value === 'zh' ? '提交中...' : '제출 중...');
+        */
+        
+        // Let the form submit normally to FormSubmit
+        return true;
+    });
+    
+    // Email validation helper function
+    function isValidEmail(email) {
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailPattern.test(email);
+    }
+
+    // Listen for scroll events to add animation effects
+    window.addEventListener('scroll', function() {
+        const painPoints = document.querySelectorAll('.pain-point');
+        
+        painPoints.forEach(point => {
+            const position = point.getBoundingClientRect();
+            
+            // If the element is in the viewport
+            if(position.top < window.innerHeight && position.bottom >= 0) {
+                point.style.opacity = 1;
+                point.style.transform = 'translateY(0)';
+            }
+        });
+    });
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            
+            if (targetElement) {
+                window.scrollTo({
+                    top: targetElement.offsetTop - 80, // Adjusted for header height
+                    behavior: 'smooth'
+                });
+            }
         });
     });
 }); 

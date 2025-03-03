@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>感谢您的注册 | DailyTopik</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .thank-you-container {
+            text-align: center;
+            max-width: 600px;
+            margin: 120px auto 50px;
+            padding: 40px 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+        .thank-you-icon {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+        .thank-you-title {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        .thank-you-message {
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        .return-button {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .return-button:hover {
+            background-color: #0066e2;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .qr-code {
+            margin: 2rem auto;
+            max-width: 200px;
+        }
+        .qr-code img {
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .qr-caption {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">DailyTopik</div>
+            <div class="language-selector">
+                <select id="language-selector">
+                    <option value="zh">中文</option>
+                    <option value="ko">한국어</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <div class="thank-you-container">
+        <i class="fas fa-check-circle thank-you-icon"></i>
+        <h1 class="thank-you-title" data-lang-zh="感谢您的注册!" data-lang-ko="등록해 주셔서 감사합니다!">感谢您的注册!</h1>
+        <p class="thank-you-message" data-lang-zh="我们已收到您的信息，将很快通过微信和您联系。请扫描下方二维码关注我们的公众号，开始接收每日TOPIK学习资料。" data-lang-ko="귀하의 정보를 받았으며 곧 WeChat을 통해 연락 드리겠습니다. 아래 QR코드를 스캔하여 우리의 공식 계정을 팔로우하고 매일 TOPIK 학습 자료를 받으세요.">我们已收到您的信息，将很快通过微信和您联系。请扫描下方二维码关注我们的公众号，开始接收每日TOPIK学习资料。</p>
+        
+        <div class="qr-code">
+            <!-- 실제 QR 코드로 교체하세요 -->
+            <img src="https://placehold.co/200x200?text=WeChat+QR" alt="WeChat QR Code">
+            <p class="qr-caption" data-lang-zh="扫描关注DailyTopik微信公众号" data-lang-ko="DailyTopik 위챗 공식 계정을 팔로우하려면 스캔하세요">扫描关注DailyTopik微信公众号</p>
+        </div>
+        
+        <a href="index.html" class="return-button" data-lang-zh="返回首页" data-lang-ko="홈페이지로 돌아가기">返回首页</a>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 DailyTopik. <span data-lang-zh="保留所有权利" data-lang-ko="모든 권리 보유">保留所有权利</span></p>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-weixin"></i></a>
+                <a href="#"><i class="fab fa-weibo"></i></a>
+                <a href="#"><i class="fab fa-qq"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Language selector functionality
+            const languageSelector = document.getElementById('language-selector');
+            
+            // Initialize with Chinese by default
+            setLanguage('zh');
+        
+            // Event listener for language change
+            languageSelector.addEventListener('change', function() {
+                setLanguage(this.value);
+            });
+        
+            function setLanguage(lang) {
+                // Update language attribute on the HTML tag
+                document.documentElement.setAttribute('lang', lang === 'zh' ? 'zh-CN' : 'ko');
+                
+                // Update all elements with data-lang attributes
+                document.querySelectorAll(`[data-lang-${lang}]`).forEach(element => {
+                    element.textContent = element.getAttribute(`data-lang-${lang}`);
+                });
+            }
+        });
+    </script>
+</body>
+</html> 
