@@ -182,22 +182,40 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 폼 제출 처리
     if (signupForm) {
+        // Get loading indicator reference
+        const loadingIndicator = document.getElementById('loading-indicator');
+        
+        // Debug log
+        console.log('Form and loading indicator setup:', { 
+            form: signupForm, 
+            loadingIndicator: loadingIndicator
+        });
+        
+        // IMPORTANT: Force initial hiding of loading indicator
+        if (loadingIndicator) {
+            loadingIndicator.style.display = 'none';
+        }
+        
         signupForm.addEventListener('submit', function(e) {
+            console.log('Form submitted');
+            
             let isValid = true;
             
-            // 적어도 하나의 필드는 입력해야 함
-            if ((!emailInput || !emailInput.value) && (!phoneInput || !phoneInput.value)) {
+            // 전화번호는 필수 입력 필드
+            if (!phoneInput || !phoneInput.value) {
                 e.preventDefault();
                 isValid = false;
                 
                 // 현재 언어에 따라 메시지 선택
                 const lang = document.documentElement.getAttribute('lang') === 'ko-KR' ? 'ko' : 'zh';
-                const message = lang === 'ko' ? '연락처 중 하나는 반드시 입력해주세요' : '请至少填写一项联系方式';
+                const message = lang === 'ko' ? '전화번호는 필수 입력 항목입니다. 결제 링크가 이 번호로 전송됩니다.' : '手机号码为必填项。支付链接将发送至此号码。';
                 
                 alert(message);
+                phoneInput.focus();
+                return false;
             }
             
-            // 이메일이 입력된 경우 유효성 검사
+            // 이메일이 입력된 경우에만 유효성 검사
             if (emailInput && emailInput.value && !isValidEmail(emailInput.value)) {
                 e.preventDefault();
                 isValid = false;
@@ -207,6 +225,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 const message = lang === 'ko' ? '유효한 이메일 주소를 입력해주세요' : '请输入有效的电子邮件地址';
                 
                 alert(message);
+                return false;
+            }
+            
+            // If form is valid, show loading indicator
+            if (isValid && loadingIndicator) {
+                console.log('Showing loading indicator');
+                
+                // IMPORTANT: Force display of loading indicator with inline style
+                loadingIndicator.style.setProperty('display', 'block', 'important');
+                
+                // Force a reflow to make sure the browser shows the loading indicator
+                void loadingIndicator.offsetWidth;
+                
+                // Add an alert for testing
+                // alert('Loading indicator should be visible now');
+                
+                // Ensure the form doesn't submit again while processing
+                const submitBtn = signupForm.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                }
             }
             
             return isValid;
