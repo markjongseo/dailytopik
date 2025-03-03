@@ -42,17 +42,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const carousel = document.querySelector('.carousel');
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
-    const phoneWidth = 280 + 32; // phone width + margin
+    let currentSlide = 0;
+    const maxSlide = 4; // Updated to 4 for 5 slides (0-indexed)
 
     // Set initial state
-    let scrollPosition = 0;
     updateButtonStates();
 
     prevBtn.addEventListener('click', function() {
-        if (scrollPosition > 0) {
-            scrollPosition -= phoneWidth;
+        if (currentSlide > 0) {
+            currentSlide -= 1;
             carousel.scrollTo({
-                left: scrollPosition,
+                left: currentSlide * (280 + 32),
                 behavior: 'smooth'
             });
             updateButtonStates();
@@ -60,11 +60,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     nextBtn.addEventListener('click', function() {
-        const maxScroll = carousel.scrollWidth - carousel.clientWidth;
-        if (scrollPosition < maxScroll) {
-            scrollPosition += phoneWidth;
+        if (currentSlide < maxSlide) {
+            currentSlide += 1;
             carousel.scrollTo({
-                left: scrollPosition,
+                left: currentSlide * (280 + 32),
                 behavior: 'smooth'
             });
             updateButtonStates();
@@ -72,12 +71,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function updateButtonStates() {
-        prevBtn.classList.toggle('disabled', scrollPosition <= 0);
-        nextBtn.classList.toggle('disabled', scrollPosition >= carousel.scrollWidth - carousel.clientWidth);
+        prevBtn.classList.toggle('disabled', currentSlide <= 0);
+        nextBtn.classList.toggle('disabled', currentSlide >= maxSlide);
         
         // Update button colors to give visual feedback
-        prevBtn.style.backgroundColor = scrollPosition <= 0 ? '#ccc' : '';
-        nextBtn.style.backgroundColor = scrollPosition >= carousel.scrollWidth - carousel.clientWidth ? '#ccc' : '';
+        prevBtn.style.backgroundColor = currentSlide <= 0 ? '#ccc' : '';
+        nextBtn.style.backgroundColor = currentSlide >= maxSlide ? '#ccc' : '';
     }
 
     // Contact method selection
@@ -194,4 +193,30 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // Add smooth scroll functionality for CTA button
+    const ctaButton = document.querySelector('.cta-button a');
+    if (ctaButton) {
+        ctaButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            
+            if (targetElement) {
+                // Scroll to the target element with animation
+                window.scrollTo({
+                    top: targetElement.offsetTop - 100, // Adjust offset as needed
+                    behavior: 'smooth'
+                });
+                
+                // Add a highlight effect to the form when scrolled
+                setTimeout(function() {
+                    targetElement.classList.add('highlight');
+                    setTimeout(function() {
+                        targetElement.classList.remove('highlight');
+                    }, 1500);
+                }, 800);
+            }
+        });
+    }
 }); 

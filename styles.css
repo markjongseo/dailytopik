@@ -58,9 +58,16 @@ header .container {
 }
 
 .logo {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     font-weight: 700;
     color: var(--primary-color);
+    display: flex;
+    align-items: center;
+}
+
+.logo-image {
+    height: 30px;
+    margin-right: 10px;
 }
 
 .language-selector select {
@@ -104,6 +111,18 @@ header .container {
     margin-bottom: 2rem;
     border: 2px solid rgba(255, 255, 255, 0.3);
     text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.cta-button a {
+    display: inline-block;
+    background-color: var(--accent-color);
+    color: var(--dark-color);
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
     animation: pulse 2s infinite;
 }
 
@@ -117,18 +136,6 @@ header .container {
     100% {
         transform: scale(1);
     }
-}
-
-.cta-button a {
-    display: inline-block;
-    background-color: var(--accent-color);
-    color: var(--dark-color);
-    padding: 1rem 2rem;
-    border-radius: 50px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    font-size: 1.1rem;
-    margin-bottom: 2rem;
 }
 
 .cta-button a:hover {
@@ -384,14 +391,18 @@ header .container {
 
 /* Form Styles */
 #signup-form {
-    max-width: 500px;
-    margin: 0 auto;
+    max-width: 600px;
+    margin: 2rem auto;
     background-color: white;
     padding: 2rem;
     border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-    position: relative;
-    z-index: 1;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+#signup-form.highlight {
+    box-shadow: 0 0 30px rgba(255, 203, 71, 0.8);
+    transform: scale(1.02);
 }
 
 .form-group {
@@ -517,7 +528,8 @@ footer .container {
     }
     
     .phone-mockup {
-        width: 250px;
+        width: 40px;
+        height: 40px;
     }
     
     .phone-screen {
@@ -555,4 +567,22 @@ footer .container {
         width: 40px;
         height: 40px;
     }
+}
+
+.qr-code {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.qr-code img {
+    max-width: 200px;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.qr-code p {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: var(--text-color);
 } 
