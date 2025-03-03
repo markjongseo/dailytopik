@@ -8,7 +8,7 @@
     --text-color: #333;
     --wechat-color: #07c160;
     --wechat-bg: #f1f1f1;
-    --font-primary: 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --font-primary: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 * {
@@ -392,7 +392,11 @@ header .container {
     display: flex;
     align-items: center;
     margin: 1rem;
-    text-align: center;
+    text-align: left;
+}
+
+.benefit:nth-child(2) {
+    justify-content: center;
 }
 
 .benefit i {
@@ -548,17 +552,15 @@ footer .container {
         height: 450px;
     }
     
-    /* 모바일에서 benefits 목록 정렬 수정 */
-    .benefits {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    
     .benefit {
         width: 100%;
         text-align: left;
         margin-bottom: 12px;
+        justify-content: flex-start;
+    }
+    
+    .benefit:nth-child(2) {
+        justify-content: flex-start;
     }
     
     .benefit i {
@@ -607,7 +609,6 @@ footer .container {
         padding: 0.8rem;
     }
     
-    /* 480px 이하에서 benefits 추가 스타일 */
     .benefits {
         margin: 1rem 0;
     }
