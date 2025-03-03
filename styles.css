@@ -595,4 +595,9 @@ footer .container {
     margin-top: 10px;
     font-size: 0.9rem;
     color: var(--text-color);
+}
+
+/* Hide carousel navigation buttons */
+#prev-btn, #next-btn {
+    display: none !important;
 } 

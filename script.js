@@ -19,185 +19,218 @@ document.addEventListener('DOMContentLoaded', function() {
             element.textContent = element.getAttribute(`data-lang-${lang}`);
         });
 
-        // Update placeholders for input fields
+        // Update placeholder attributes
         document.querySelectorAll(`[data-lang-${lang}-placeholder]`).forEach(element => {
-            element.setAttribute('placeholder', element.getAttribute(`data-lang-${lang}-placeholder`));
+            element.placeholder = element.getAttribute(`data-lang-${lang}-placeholder`);
         });
 
-        // Update selected option text
-        document.querySelectorAll('select option').forEach(option => {
-            if (option.hasAttribute(`data-lang-${lang}`)) {
-                option.textContent = option.getAttribute(`data-lang-${lang}`);
-            }
-        });
-
-        // Save language preference to localStorage
-        localStorage.setItem('preferredLanguage', lang);
-
-        // Update form validation messages based on language
+        // Update form validation messages
         updateFormValidationMessages(lang);
     }
 
-    // Carousel functionality
+    // ==========================================================
+    // Carousel functionality - 새로 작성된 코드
+    // ==========================================================
     const carousel = document.querySelector('.carousel');
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
-    let autoSlideInterval; // 자동 슬라이드를 위한 interval
+    let autoSlideInterval = null;
+    
+    // 디버깅을 위한 로그
+    console.log('캐러셀 요소:', carousel);
+    console.log('이전 버튼:', prevBtn);
+    console.log('다음 버튼:', nextBtn);
     
     if (carousel && prevBtn && nextBtn) {
-        // 모바일에서 스크롤 거리 조정
-        const getScrollDistance = () => {
-            return window.innerWidth <= 480 ? 290 : 310; // 모바일에서는 더 작은 값 사용
-        };
+        // 슬라이드 너비 계산 함수
+        function getSlideWidth() {
+            // 슬라이드 요소 너비 + 마진
+            return window.innerWidth <= 480 ? 290 : 310;
+        }
         
-        // 자동 슬라이드 시작 함수
+        // 다음 슬라이드로 이동
+        function nextSlide() {
+            if (carousel.scrollLeft >= carousel.scrollWidth - carousel.clientWidth - 30) {
+                // 마지막 슬라이드면 처음으로 이동
+                carousel.scrollTo({
+                    left: 0,
+                    behavior: 'smooth'
+                });
+            } else {
+                // 다음 슬라이드로 이동
+                carousel.scrollTo({
+                    left: carousel.scrollLeft + getSlideWidth(),
+                    behavior: 'smooth'
+                });
+            }
+            // 버튼 상태 업데이트
+            setTimeout(updateButtonStates, 500);
+        }
+        
+        // 이전 슬라이드로 이동
+        function prevSlide() {
+            carousel.scrollTo({
+                left: carousel.scrollLeft - getSlideWidth(),
+                behavior: 'smooth'
+            });
+            // 버튼 상태 업데이트
+            setTimeout(updateButtonStates, 500);
+        }
+        
+        // 버튼 상태 업데이트
+        function updateButtonStates() {
+            const isAtStart = carousel.scrollLeft < 10;
+            const isAtEnd = carousel.scrollLeft > carousel.scrollWidth - carousel.clientWidth - 30;
+            
+            // 버튼 비활성화 상태 토글
+            prevBtn.classList.toggle('disabled', isAtStart);
+            nextBtn.classList.toggle('disabled', isAtEnd);
+            
+            // 버튼 색상 변경
+            prevBtn.style.backgroundColor = isAtStart ? '#ccc' : '';
+            nextBtn.style.backgroundColor = isAtEnd ? '#ccc' : '';
+            
+            console.log('버튼 상태 업데이트:', { 
+                isAtStart, 
+                isAtEnd, 
+                scrollLeft: carousel.scrollLeft, 
+                scrollWidth: carousel.scrollWidth, 
+                clientWidth: carousel.clientWidth 
+            });
+        }
+        
+        // 자동 슬라이드 시작
         function startAutoSlide() {
-            // 5초마다 다음 슬라이드로 이동
-            autoSlideInterval = setInterval(() => {
-                // 마지막 슬라이드에 도달했는지 확인
-                if (carousel.scrollLeft >= carousel.scrollWidth - carousel.clientWidth) {
-                    // 처음으로 돌아가기
-                    carousel.scrollTo({
-                        left: 0,
-                        behavior: 'smooth'
-                    });
-                } else {
-                    // 다음 슬라이드로 이동
-                    carousel.scrollLeft += getScrollDistance();
-                }
-                updateButtonStates();
-            }, 5000); // 5초 간격
+            if (autoSlideInterval) {
+                clearInterval(autoSlideInterval);
+            }
+            autoSlideInterval = setInterval(nextSlide, 5000);
+            console.log('자동 슬라이드 시작');
         }
         
-        // 자동 슬라이드 중지 함수
+        // 자동 슬라이드 중지
         function stopAutoSlide() {
-            clearInterval(autoSlideInterval);
+            if (autoSlideInterval) {
+                clearInterval(autoSlideInterval);
+                autoSlideInterval = null;
+                console.log('자동 슬라이드 중지');
+            }
         }
         
-        // 초기 자동 슬라이드 시작
-        startAutoSlide();
+        // 이벤트 리스너 추가
+        nextBtn.addEventListener('click', function(e) {
+            console.log('다음 버튼 클릭');
+            e.preventDefault();
+            stopAutoSlide();
+            nextSlide();
+            setTimeout(startAutoSlide, 10000);
+        });
         
-        // 사용자 상호작용 시 자동 슬라이드 중지/재시작
+        prevBtn.addEventListener('click', function(e) {
+            console.log('이전 버튼 클릭');
+            e.preventDefault();
+            stopAutoSlide();
+            prevSlide();
+            setTimeout(startAutoSlide, 10000);
+        });
+        
+        // 터치 이벤트 처리
+        carousel.addEventListener('touchstart', function() {
+            stopAutoSlide();
+        });
+        
+        carousel.addEventListener('touchend', function() {
+            // 스크롤 후 버튼 상태 업데이트
+            setTimeout(updateButtonStates, 500);
+            // 일정 시간 후 자동 슬라이드 재시작
+            setTimeout(startAutoSlide, 10000);
+        });
+        
+        // 마우스 이벤트 처리
         carousel.addEventListener('mouseenter', stopAutoSlide);
         carousel.addEventListener('mouseleave', startAutoSlide);
         
-        // 버튼 클릭 시 scrollLeft 업데이트
-        nextBtn.addEventListener('click', () => {
-            stopAutoSlide(); // 버튼 클릭 시 자동 슬라이드 중지
-            carousel.scrollLeft += getScrollDistance();
-            updateButtonStates();
-            // 클릭 후 일정 시간 후 자동 슬라이드 재시작
-            setTimeout(startAutoSlide, 10000);
+        // 스크롤 이벤트 처리
+        carousel.addEventListener('scroll', function() {
+            requestAnimationFrame(updateButtonStates);
         });
         
-        prevBtn.addEventListener('click', () => {
-            stopAutoSlide(); // 버튼 클릭 시 자동 슬라이드 중지
-            carousel.scrollLeft -= getScrollDistance();
-            updateButtonStates();
-            // 클릭 후 일정 시간 후 자동 슬라이드 재시작
-            setTimeout(startAutoSlide, 10000);
-        });
+        // 초기 버튼 상태 설정
+        updateButtonStates();
         
-        function updateButtonStates() {
-            prevBtn.classList.toggle('disabled', carousel.scrollLeft <= 0);
-            nextBtn.classList.toggle('disabled', carousel.scrollLeft >= carousel.scrollWidth - carousel.clientWidth);
-            
-            // Update button colors to give visual feedback
-            prevBtn.style.backgroundColor = carousel.scrollLeft <= 0 ? '#ccc' : '';
-            nextBtn.style.backgroundColor = carousel.scrollLeft >= carousel.scrollWidth - carousel.clientWidth ? '#ccc' : '';
-        }
+        // 초기 자동 슬라이드 시작
+        startAutoSlide();
     }
     
-    // 터치 스와이프 이벤트로 모바일 환경에서도 자동 슬라이드 중지하기
-    if (carousel) {
-        carousel.addEventListener('touchstart', stopAutoSlide);
-        carousel.addEventListener('touchend', () => {
-            // 터치 종료 후 10초 후에 자동 슬라이드 재시작
-            setTimeout(startAutoSlide, 10000);
-        });
-    }
-
-    // Contact method selection
-    const contactMethodSelect = document.getElementById('contact-method');
-    const emailGroup = document.getElementById('email-group');
-    const phoneGroup = document.getElementById('phone-group');
-
-    contactMethodSelect.addEventListener('change', function() {
-        const method = this.value;
-        if (method === 'email') {
-            emailGroup.style.display = 'block';
-            phoneGroup.style.display = 'none';
-        } else if (method === 'phone') {
-            emailGroup.style.display = 'none';
-            phoneGroup.style.display = 'block';
-        }
-    });
-
-    // Form validation functionality
+    // Form handling
     const signupForm = document.getElementById('signup-form');
     const emailInput = document.getElementById('email');
     const phoneInput = document.getElementById('phone');
-    const successMessage = document.querySelector('.success-message');
     
-    // Set custom form validation messages based on language
+    // 폼 유효성 검사 메시지 업데이트
     function updateFormValidationMessages(lang) {
-        const emailValidationMessage = lang === 'zh' ? '请输入有效的电子邮件地址' : '유효한 이메일 주소를 입력하세요';
-        const requiredFieldMessage = lang === 'zh' ? '请至少填写电子邮件或手机号码中的一项' : '이메일 또는 전화번호 중 하나 이상을 입력하세요';
+        const emailErrorMsg = lang === 'zh' ? '请输入有效的电子邮件地址' : '유효한 이메일 주소를 입력하세요';
+        const requiredFieldMsg = lang === 'zh' ? '请至少填写一项联系方式' : '적어도 하나의 연락처를 입력하세요';
         
-        emailInput.setAttribute('title', emailValidationMessage);
-        emailInput.dataset.errorMessage = emailValidationMessage;
-        phoneInput.dataset.errorMessage = requiredFieldMessage;
+        // 에러 메시지 업데이트
+        if (emailInput) emailInput.dataset.errorMessage = emailErrorMsg;
+        if (phoneInput) phoneInput.dataset.errorMessage = requiredFieldMsg;
     }
     
-    // Initialize validation messages
-    updateFormValidationMessages(languageSelector.value);
-
-    // Form submission handler
-    signupForm.addEventListener('submit', function(e) {
-        // Check if at least one field is filled
-        if (!emailInput.value && !phoneInput.value) {
-            e.preventDefault();
-            const currentLang = languageSelector.value;
-            const errorMessage = currentLang === 'zh' ? 
-                '请至少填写电子邮件或手机号码中的一项' : 
-                '이메일 또는 전화번호 중 하나 이상을 입력하세요';
+    // 폼 제출 처리
+    if (signupForm) {
+        signupForm.addEventListener('submit', function(e) {
+            let isValid = true;
             
-            alert(errorMessage);
-            return false;
-        }
-        
-        // If email is filled, validate email format
-        if (emailInput.value && !isValidEmail(emailInput.value)) {
-            e.preventDefault();
-            const currentLang = languageSelector.value;
-            const errorMessage = currentLang === 'zh' ? 
-                '请输入有效的电子邮件地址' : 
-                '유효한 이메일 주소를 입력하세요';
+            // 적어도 하나의 필드는 입력해야 함
+            if ((!emailInput || !emailInput.value) && (!phoneInput || !phoneInput.value)) {
+                e.preventDefault();
+                isValid = false;
+                const errorMsg = languageSelector.value === 'zh' ? 
+                    '请至少填写一项联系方式' : '적어도 하나의 연락처를 입력하세요';
+                alert(errorMsg);
+            }
             
-            alert(errorMessage);
-            emailInput.focus();
-            return false;
-        }
-        
-        // If validation passed, show a temporary message and allow form submission
-        console.log('Form validation passed, submitting...');
-        
-        // You can uncomment the following code if you want to show a loading indicator
-        /*
-        const submitButton = document.querySelector('.submit-button');
-        submitButton.disabled = true;
-        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + 
-                                (languageSelector.value === 'zh' ? '提交中...' : '제출 중...');
-        */
-        
-        // Let the form submit normally to FormSubmit
-        return true;
-    });
+            // 이메일이 입력된 경우 유효성 검사
+            if (emailInput && emailInput.value && !isValidEmail(emailInput.value)) {
+                e.preventDefault();
+                isValid = false;
+                const errorMsg = languageSelector.value === 'zh' ? 
+                    '请输入有效的电子邮件地址' : '유효한 이메일 주소를 입력하세요';
+                alert(errorMsg);
+            }
+            
+            return isValid;
+        });
+    }
     
-    // Email validation helper function
+    // 이메일 유효성 검사 함수
     function isValidEmail(email) {
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailPattern.test(email);
+    }
+
+    // CTA 버튼 스무스 스크롤
+    const ctaButton = document.querySelector('.cta-button a');
+    if (ctaButton) {
+        ctaButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            
+            if (targetElement) {
+                window.scrollTo({
+                    top: targetElement.offsetTop - 80,
+                    behavior: 'smooth'
+                });
+                
+                // 폼 하이라이트 효과
+                targetElement.classList.add('highlight');
+                setTimeout(() => {
+                    targetElement.classList.remove('highlight');
+                }, 1500);
+            }
+        });
     }
 
     // Listen for scroll events to add animation effects
@@ -231,30 +264,4 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-
-    // Add smooth scroll functionality for CTA button
-    const ctaButton = document.querySelector('.cta-button a');
-    if (ctaButton) {
-        ctaButton.addEventListener('click', function(e) {
-            e.preventDefault();
-            const targetId = this.getAttribute('href');
-            const targetElement = document.querySelector(targetId);
-            
-            if (targetElement) {
-                // Scroll to the target element with animation
-                window.scrollTo({
-                    top: targetElement.offsetTop - 100, // Adjust offset as needed
-                    behavior: 'smooth'
-                });
-                
-                // Add a highlight effect to the form when scrolled
-                setTimeout(function() {
-                    targetElement.classList.add('highlight');
-                    setTimeout(function() {
-                        targetElement.classList.remove('highlight');
-                    }, 1500);
-                }, 800);
-            }
-        });
-    }
 }); 
