@@ -163,12 +163,21 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 폼 유효성 검사 메시지 업데이트
     function updateFormValidationMessages(lang) {
-        const emailErrorMsg = '请输入有效的电子邮件地址';
-        const requiredFieldMsg = '请至少填写一项联系方式';
+        let emailErrorMsg, phoneErrorMsg, requiredFieldMsg;
+        
+        if (lang === 'zh') {
+            emailErrorMsg = '请输入有效的电子邮件地址';
+            phoneErrorMsg = '请输入有效的手机号码';
+            requiredFieldMsg = '请至少填写一项联系方式';
+        } else if (lang === 'ko') {
+            emailErrorMsg = '유효한 이메일 주소를 입력해주세요';
+            phoneErrorMsg = '유효한 전화번호를 입력해주세요';
+            requiredFieldMsg = '연락처 중 하나는 반드시 입력해주세요';
+        }
         
         // 에러 메시지 업데이트
         if (emailInput) emailInput.dataset.errorMessage = emailErrorMsg;
-        if (phoneInput) phoneInput.dataset.errorMessage = requiredFieldMsg;
+        if (phoneInput) phoneInput.dataset.errorMessage = phoneErrorMsg;
     }
     
     // 폼 제출 처리
@@ -180,14 +189,24 @@ document.addEventListener('DOMContentLoaded', function() {
             if ((!emailInput || !emailInput.value) && (!phoneInput || !phoneInput.value)) {
                 e.preventDefault();
                 isValid = false;
-                alert('请至少填写一项联系方式');
+                
+                // 현재 언어에 따라 메시지 선택
+                const lang = document.documentElement.getAttribute('lang') === 'ko-KR' ? 'ko' : 'zh';
+                const message = lang === 'ko' ? '연락처 중 하나는 반드시 입력해주세요' : '请至少填写一项联系方式';
+                
+                alert(message);
             }
             
             // 이메일이 입력된 경우 유효성 검사
             if (emailInput && emailInput.value && !isValidEmail(emailInput.value)) {
                 e.preventDefault();
                 isValid = false;
-                alert('请输入有效的电子邮件地址');
+                
+                // 현재 언어에 따라 메시지 선택
+                const lang = document.documentElement.getAttribute('lang') === 'ko-KR' ? 'ko' : 'zh';
+                const message = lang === 'ko' ? '유효한 이메일 주소를 입력해주세요' : '请输入有效的电子邮件地址';
+                
+                alert(message);
             }
             
             return isValid;
