@@ -67,12 +67,6 @@
     <header>
         <div class="container">
             <div class="logo">DailyTopik</div>
-            <div class="language-selector">
-                <select id="language-selector">
-                    <option value="zh">中文</option>
-                    <option value="ko">한국어</option>
-                </select>
-            </div>
         </div>
     </header>
 
@@ -103,20 +97,12 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Language selector functionality
-            const languageSelector = document.getElementById('language-selector');
-            
-            // Initialize with Chinese by default
+            // Set default language to Chinese
             setLanguage('zh');
-        
-            // Event listener for language change
-            languageSelector.addEventListener('change', function() {
-                setLanguage(this.value);
-            });
         
             function setLanguage(lang) {
                 // Update language attribute on the HTML tag
-                document.documentElement.setAttribute('lang', lang === 'zh' ? 'zh-CN' : 'ko');
+                document.documentElement.setAttribute('lang', 'zh-CN');
                 
                 // Update all elements with data-lang attributes
                 document.querySelectorAll(`[data-lang-${lang}]`).forEach(element => {

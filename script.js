@@ -1,18 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Language selector functionality
-    const languageSelector = document.getElementById('language-selector');
+    // Language selector functionality removed as requested
     
-    // Initialize with Chinese by default
+    // Set default language to Chinese
     setLanguage('zh');
-
-    // Event listener for language change
-    languageSelector.addEventListener('change', function() {
-        setLanguage(this.value);
-    });
 
     function setLanguage(lang) {
         // Update language attribute on the HTML tag
-        document.documentElement.setAttribute('lang', lang === 'zh' ? 'zh-CN' : 'ko');
+        document.documentElement.setAttribute('lang', 'zh-CN');
         
         // Update all elements with data-lang attributes
         document.querySelectorAll(`[data-lang-${lang}]`).forEach(element => {
@@ -169,8 +163,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 폼 유효성 검사 메시지 업데이트
     function updateFormValidationMessages(lang) {
-        const emailErrorMsg = lang === 'zh' ? '请输入有效的电子邮件地址' : '유효한 이메일 주소를 입력하세요';
-        const requiredFieldMsg = lang === 'zh' ? '请至少填写一项联系方式' : '적어도 하나의 연락처를 입력하세요';
+        const emailErrorMsg = '请输入有效的电子邮件地址';
+        const requiredFieldMsg = '请至少填写一项联系方式';
         
         // 에러 메시지 업데이트
         if (emailInput) emailInput.dataset.errorMessage = emailErrorMsg;
@@ -186,18 +180,14 @@ document.addEventListener('DOMContentLoaded', function() {
             if ((!emailInput || !emailInput.value) && (!phoneInput || !phoneInput.value)) {
                 e.preventDefault();
                 isValid = false;
-                const errorMsg = languageSelector.value === 'zh' ? 
-                    '请至少填写一项联系方式' : '적어도 하나의 연락처를 입력하세요';
-                alert(errorMsg);
+                alert('请至少填写一项联系方式');
             }
             
             // 이메일이 입력된 경우 유효성 검사
             if (emailInput && emailInput.value && !isValidEmail(emailInput.value)) {
                 e.preventDefault();
                 isValid = false;
-                const errorMsg = languageSelector.value === 'zh' ? 
-                    '请输入有效的电子邮件地址' : '유효한 이메일 주소를 입력하세요';
-                alert(errorMsg);
+                alert('请输入有效的电子邮件地址');
             }
             
             return isValid;
