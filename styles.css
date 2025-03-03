@@ -216,9 +216,10 @@ header .container {
     display: flex;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
     padding: 2rem 0;
+    -webkit-overflow-scrolling: touch;
+    transition: scroll 0.5s ease-in-out;
 }
 
 .carousel::-webkit-scrollbar {
@@ -528,8 +529,7 @@ footer .container {
     }
     
     .phone-mockup {
-        width: 40px;
-        height: 40px;
+        width: 260px;
     }
     
     .phone-screen {
@@ -556,16 +556,26 @@ footer .container {
     }
     
     .phone-mockup {
-        width: 220px;
+        width: 280px;
+        margin: 0 0.5rem;
     }
     
     .phone-screen {
-        height: 400px;
+        height: 450px;
+        padding: 0.8rem;
     }
     
     .carousel-controls button {
         width: 40px;
         height: 40px;
+    }
+
+    .carousel {
+        padding: 1rem 0;
+    }
+    
+    .example-question {
+        padding: 0.8rem;
     }
 }
 

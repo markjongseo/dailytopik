@@ -42,41 +42,79 @@ document.addEventListener('DOMContentLoaded', function() {
     const carousel = document.querySelector('.carousel');
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
-    let currentSlide = 0;
-    const maxSlide = 4; // Updated to 4 for 5 slides (0-indexed)
-
-    // Set initial state
-    updateButtonStates();
-
-    prevBtn.addEventListener('click', function() {
-        if (currentSlide > 0) {
-            currentSlide -= 1;
-            carousel.scrollTo({
-                left: currentSlide * (280 + 32),
-                behavior: 'smooth'
-            });
-            updateButtonStates();
-        }
-    });
-
-    nextBtn.addEventListener('click', function() {
-        if (currentSlide < maxSlide) {
-            currentSlide += 1;
-            carousel.scrollTo({
-                left: currentSlide * (280 + 32),
-                behavior: 'smooth'
-            });
-            updateButtonStates();
-        }
-    });
-
-    function updateButtonStates() {
-        prevBtn.classList.toggle('disabled', currentSlide <= 0);
-        nextBtn.classList.toggle('disabled', currentSlide >= maxSlide);
+    let autoSlideInterval; // 자동 슬라이드를 위한 interval
+    
+    if (carousel && prevBtn && nextBtn) {
+        // 모바일에서 스크롤 거리 조정
+        const getScrollDistance = () => {
+            return window.innerWidth <= 480 ? 290 : 310; // 모바일에서는 더 작은 값 사용
+        };
         
-        // Update button colors to give visual feedback
-        prevBtn.style.backgroundColor = currentSlide <= 0 ? '#ccc' : '';
-        nextBtn.style.backgroundColor = currentSlide >= maxSlide ? '#ccc' : '';
+        // 자동 슬라이드 시작 함수
+        function startAutoSlide() {
+            // 5초마다 다음 슬라이드로 이동
+            autoSlideInterval = setInterval(() => {
+                // 마지막 슬라이드에 도달했는지 확인
+                if (carousel.scrollLeft >= carousel.scrollWidth - carousel.clientWidth) {
+                    // 처음으로 돌아가기
+                    carousel.scrollTo({
+                        left: 0,
+                        behavior: 'smooth'
+                    });
+                } else {
+                    // 다음 슬라이드로 이동
+                    carousel.scrollLeft += getScrollDistance();
+                }
+                updateButtonStates();
+            }, 5000); // 5초 간격
+        }
+        
+        // 자동 슬라이드 중지 함수
+        function stopAutoSlide() {
+            clearInterval(autoSlideInterval);
+        }
+        
+        // 초기 자동 슬라이드 시작
+        startAutoSlide();
+        
+        // 사용자 상호작용 시 자동 슬라이드 중지/재시작
+        carousel.addEventListener('mouseenter', stopAutoSlide);
+        carousel.addEventListener('mouseleave', startAutoSlide);
+        
+        // 버튼 클릭 시 scrollLeft 업데이트
+        nextBtn.addEventListener('click', () => {
+            stopAutoSlide(); // 버튼 클릭 시 자동 슬라이드 중지
+            carousel.scrollLeft += getScrollDistance();
+            updateButtonStates();
+            // 클릭 후 일정 시간 후 자동 슬라이드 재시작
+            setTimeout(startAutoSlide, 10000);
+        });
+        
+        prevBtn.addEventListener('click', () => {
+            stopAutoSlide(); // 버튼 클릭 시 자동 슬라이드 중지
+            carousel.scrollLeft -= getScrollDistance();
+            updateButtonStates();
+            // 클릭 후 일정 시간 후 자동 슬라이드 재시작
+            setTimeout(startAutoSlide, 10000);
+        });
+        
+        function updateButtonStates() {
+            prevBtn.classList.toggle('disabled', carousel.scrollLeft <= 0);
+            nextBtn.classList.toggle('disabled', carousel.scrollLeft >= carousel.scrollWidth - carousel.clientWidth);
+            
+            // Update button colors to give visual feedback
+            prevBtn.style.backgroundColor = carousel.scrollLeft <= 0 ? '#ccc' : '';
+            nextBtn.style.backgroundColor = carousel.scrollLeft >= carousel.scrollWidth - carousel.clientWidth ? '#ccc' : '';
+        }
+    }
+    
+    // 터치 스와이프 이벤트로 모바일 환경에서도 자동 슬라이드 중지하기
+    if (carousel) {
+        carousel.addEventListener('touchstart', stopAutoSlide);
+        carousel.addEventListener('touchend', () => {
+            // 터치 종료 후 10초 후에 자동 슬라이드 재시작
+            setTimeout(startAutoSlide, 10000);
+        });
     }
 
     // Contact method selection
