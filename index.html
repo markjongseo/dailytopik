@@ -4,6 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DailyTopik - 每日韩语TOPIK备考资料</title>
+    <meta name="description" content="DailyTopik为中国留学生提供微信韩语学习服务，每日5分钟，轻松备考TOPIK。매일 5분 위챗 한국어 토픽 학습.">
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8KWP0DGV21"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-8KWP0DGV21');
+    </script>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="styles.css">
@@ -230,9 +242,64 @@
                 <a href="#"><i class="fab fa-weibo"></i></a>
                 <a href="#"><i class="fab fa-qq"></i></a>
             </div>
+            <div id="tracker-display" style="position: fixed; bottom: 5px; right: 5px; font-size: 0; opacity: 0; color: transparent; z-index: -1; visibility: hidden; display: none;">V: 0 | C: 0</div>
         </div>
     </footer>
 
     <script src="script.js"></script>
+    
+    <!-- Server-side tracking script -->
+    <script>
+        // This will be executed after the main script loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const trackerDisplay = document.getElementById('tracker-display');
+            
+            // Use countapi.xyz for server-side tracking (free service)
+            // Create unique keys for this site
+            const NAMESPACE = 'dailytopik';
+            const VISIT_KEY = 'visits';
+            const CLICK_KEY = 'clicks';
+            
+            // Function to fetch and update counts
+            async function updateCounts() {
+                try {
+                    // Get visit count first
+                    const visitResponse = await fetch(`https://api.countapi.xyz/hit/${NAMESPACE}/${VISIT_KEY}`);
+                    const visitData = await visitResponse.json();
+                    
+                    // Get click count
+                    const clickResponse = await fetch(`https://api.countapi.xyz/get/${NAMESPACE}/${CLICK_KEY}`);
+                    const clickData = await clickResponse.json();
+                    
+                    // Update display
+                    if (trackerDisplay) {
+                        trackerDisplay.textContent = `V: ${visitData.value} | C: ${clickData.value || 0}`;
+                    }
+                } catch (error) {
+                    console.error('Error fetching counts:', error);
+                }
+            }
+            
+            // Initialize click tracker on the form submission
+            document.getElementById('signup-form').addEventListener('submit', async function() {
+                try {
+                    // Increment click count when form is submitted
+                    const response = await fetch(`https://api.countapi.xyz/hit/${NAMESPACE}/${CLICK_KEY}`);
+                    const data = await response.json();
+                    
+                    // Update display immediately after click
+                    if (trackerDisplay) {
+                        const visitCount = parseInt(trackerDisplay.textContent.split('|')[0].replace('V:', '').trim());
+                        trackerDisplay.textContent = `V: ${visitCount} | C: ${data.value}`;
+                    }
+                } catch (error) {
+                    console.error('Error updating click count:', error);
+                }
+            });
+            
+            // Update counts when page loads
+            updateCounts();
+        });
+    </script>
 </body>
 </html> 

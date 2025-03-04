@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Remove local tracking code since we're using server-side tracking now
+
     // Language selector functionality removed as requested
     
     // Set default language to Chinese
