@@ -1,6 +1,22 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Remove local tracking code since we're using server-side tracking now
 
+    // Form element references
+    let signupForm, emailInput, phoneInput;
+    
+    // Init function that will be called after all declarations
+    function initializeElements() {
+        // Initialize form elements
+        signupForm = document.getElementById('signup-form');
+        emailInput = document.getElementById('email');
+        phoneInput = document.getElementById('phone');
+        
+        // Set up event listeners for the form if elements exist
+        if (signupForm) {
+            setupFormHandling();
+        }
+    }
+
     // Language selector functionality removed as requested
     
     // Set default language to Chinese
@@ -158,178 +174,119 @@ document.addEventListener('DOMContentLoaded', function() {
         startAutoSlide();
     }
     
-    // Form handling
-    const signupForm = document.getElementById('signup-form');
-    const emailInput = document.getElementById('email');
-    const phoneInput = document.getElementById('phone');
-    
-    // 폼 유효성 검사 메시지 업데이트
-    function updateFormValidationMessages(lang) {
-        let emailErrorMsg, phoneErrorMsg, phoneFormatErrorMsg, requiredFieldMsg;
-        
-        if (lang === 'zh') {
-            emailErrorMsg = '请输入有效的电子邮件地址';
-            phoneErrorMsg = '请输入有效的手机号码';
-            phoneFormatErrorMsg = '请输入正确的手机号码格式 (01012345678)';
-            requiredFieldMsg = '请至少填写一项联系方式';
-        } else if (lang === 'ko') {
-            emailErrorMsg = '유효한 이메일 주소를 입력해주세요';
-            phoneErrorMsg = '유효한 전화번호를 입력해주세요';
-            phoneFormatErrorMsg = '올바른 전화번호 형식을 입력해주세요 (01012345678)';
-            requiredFieldMsg = '연락처 중 하나는 반드시 입력해주세요';
-        }
-        
-        // 에러 메시지 업데이트
-        if (emailInput) emailInput.dataset.errorMessage = emailErrorMsg;
-        if (phoneInput) {
-            phoneInput.dataset.errorMessage = phoneErrorMsg;
-            phoneInput.dataset.formatErrorMessage = phoneFormatErrorMsg;
-        }
-    }
-    
-    // 폼 제출 처리
-    if (signupForm) {
-        // Get loading indicator reference
+    // Form handling setup function
+    function setupFormHandling() {
+        console.debug('Setting up form handling with loading indicator');
         const loadingIndicator = document.getElementById('loading-indicator');
         const successMessage = document.querySelector('.success-message');
         
-        // Debug log
-        console.log('Form and loading indicator setup:', { 
-            form: signupForm, 
-            loadingIndicator: loadingIndicator
-        });
-        
-        // IMPORTANT: Force initial hiding of loading indicator
-        if (loadingIndicator) {
-            loadingIndicator.style.display = 'none';
+        // Phone number validation function
+        function isValidPhoneNumber(phone) {
+            // 01012345678 format (11 digits starting with 010)
+            const phoneRegex = /^010\d{8}$/;
+            return phoneRegex.test(phone);
         }
         
-        signupForm.addEventListener('submit', function(e) {
-            e.preventDefault(); // Prevent the default form submission
-            console.log('Form submitted');
-            
-            let isValid = true;
-            
-            // 전화번호는 필수 입력 필드
-            if (!phoneInput || !phoneInput.value) {
-                isValid = false;
+        // Form submission handler
+        if (signupForm) {
+            signupForm.addEventListener('submit', function(e) {
+                e.preventDefault();
                 
-                // 현재 언어에 따라 메시지 선택
-                const lang = document.documentElement.getAttribute('lang') === 'ko-KR' ? 'ko' : 'zh';
-                const message = lang === 'ko' ? '전화번호는 필수 입력 항목입니다. 결제 링크가 이 번호로 전송됩니다.' : '手机号码为必填项。支付链接将发送至此号码。';
+                // Get input values
+                const email = emailInput ? emailInput.value.trim() : '';
+                const phone = phoneInput ? phoneInput.value.trim() : '';
                 
-                alert(message);
-                phoneInput.focus();
-                return false;
-            }
-            
-            // 전화번호 형식 검사
-            if (phoneInput && phoneInput.value && !isValidPhoneNumber(phoneInput.value)) {
-                isValid = false;
+                // Check if at least one contact method is provided
+                if (!email && !phone) {
+                    const lang = document.documentElement.getAttribute('lang') === 'zh-CN' ? 'zh' : 'ko';
+                    const requiredFieldMsg = lang === 'zh' ? 
+                        '请至少填写一项联系方式' : 
+                        '연락처 중 하나는 반드시 입력해주세요';
+                    alert(requiredFieldMsg);
+                    return;
+                }
                 
-                // 현재 언어에 따라 메시지 선택
-                const lang = document.documentElement.getAttribute('lang') === 'ko-KR' ? 'ko' : 'zh';
-                const message = phoneInput.dataset.formatErrorMessage || (lang === 'ko' ? '올바른 전화번호 형식을 입력해주세요 (01012345678)' : '请输入正确的手机号码格式 (01012345678)');
+                // Validate email if provided
+                if (email && !isValidEmail(email)) {
+                    const errorMsg = emailInput.dataset.errorMessage;
+                    alert(errorMsg);
+                    return;
+                }
                 
-                alert(message);
-                phoneInput.focus();
-                return false;
-            }
-            
-            // 이메일이 입력된 경우에만 유효성 검사
-            if (emailInput && emailInput.value && !isValidEmail(emailInput.value)) {
-                isValid = false;
+                // Validate phone if provided
+                if (phone) {
+                    if (!isValidPhoneNumber(phone)) {
+                        const formatErrorMsg = phoneInput.dataset.formatErrorMessage;
+                        alert(formatErrorMsg);
+                        return;
+                    }
+                }
                 
-                // 현재 언어에 따라 메시지 선택
-                const lang = document.documentElement.getAttribute('lang') === 'ko-KR' ? 'ko' : 'zh';
-                const message = lang === 'ko' ? '유효한 이메일 주소를 입력해주세요' : '请输入有效的电子邮件地址';
-                
-                alert(message);
-                emailInput.focus();
-                return false;
-            }
-            
-            // If form is valid, submit using fetch API
-            if (isValid) {
-                console.log('Form is valid, submitting with fetch');
-                
-                // Show loading indicator
+                // Form is valid, show loading indicator
                 if (loadingIndicator) {
-                    console.log('Showing loading indicator');
-                    loadingIndicator.style.display = 'block';
+                    loadingIndicator.style.setProperty('display', 'flex', 'important');
+                    // Force a reflow
+                    void loadingIndicator.offsetWidth;
                 }
                 
-                // Disable the submit button to prevent multiple submissions
-                const submitBtn = signupForm.querySelector('button[type="submit"]');
-                if (submitBtn) {
-                    submitBtn.disabled = true;
+                // Disable the submit button
+                const submitButton = signupForm.querySelector('button[type="submit"]');
+                if (submitButton) {
+                    submitButton.disabled = true;
                 }
                 
-                // Get form data
-                const formData = new FormData(signupForm);
-                
-                // Submit the form using fetch
+                // Use fetch to submit the form
                 fetch(signupForm.action, {
                     method: 'POST',
-                    body: formData
+                    body: new FormData(signupForm),
                 })
                 .then(response => {
-                    if (response.ok) {
-                        return response.json();
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
                     }
-                    throw new Error('Network response was not ok');
+                    return response.json();
                 })
                 .then(data => {
                     console.log('Success:', data);
                     
-                    // Hide loading indicator
-                    if (loadingIndicator) {
-                        loadingIndicator.style.display = 'none';
+                    // Form submitted successfully, redirect happens automatically
+                    // If there's no redirect, we can show a success message
+                    if (successMessage) {
+                        successMessage.style.display = 'block';
                     }
                     
-                    // Show success message
-                    if (successMessage) {
-                        signupForm.style.display = 'none';
-                        successMessage.style.display = 'block';
-                    } else {
-                        // If no success message element, redirect to the success page
-                        window.location.href = formData.get('_redirect') || 'https://markjongseo.github.io/dailytopik/thankyou.html';
-                    }
+                    // Reset the form
+                    signupForm.reset();
                 })
                 .catch(error => {
                     console.error('Error:', error);
                     
+                    // Show error message to user
+                    const lang = document.documentElement.getAttribute('lang') === 'zh-CN' ? 'zh' : 'ko';
+                    const errorMsg = lang === 'zh' ? 
+                        '提交表单时出现错误。请稍后再试。' : 
+                        '양식을 제출하는 중에 오류가 발생했습니다. 나중에 다시 시도해 주세요.';
+                    alert(errorMsg);
+                    
+                    // Re-enable the submit button
+                    if (submitButton) {
+                        submitButton.disabled = false;
+                    }
+                })
+                .finally(() => {
                     // Hide loading indicator
                     if (loadingIndicator) {
                         loadingIndicator.style.display = 'none';
                     }
-                    
-                    // Re-enable the submit button
-                    if (submitBtn) {
-                        submitBtn.disabled = false;
-                    }
-                    
-                    // Show error message
-                    const lang = document.documentElement.getAttribute('lang') === 'ko-KR' ? 'ko' : 'zh';
-                    const message = lang === 'ko' ? '제출 중 오류가 발생했습니다. 나중에 다시 시도해주세요.' : '提交时出错。请稍后再试。';
-                    alert(message);
                 });
-            }
-        });
+            });
+        }
     }
     
-    // 이메일 유효성 검사 함수
+    // Helper function to validate email
     function isValidEmail(email) {
-        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailPattern.test(email);
-    }
-
-    // 전화번호 유효성 검사 함수
-    function isValidPhoneNumber(phone) {
-        // Remove any non-digit characters
-        const cleanedPhone = phone.replace(/\D/g, '');
-        // Check if it starts with 010 and has exactly 11 digits (010 + 8 more digits)
-        return /^010\d{8}$/.test(cleanedPhone);
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
     }
 
     // CTA 버튼 스무스 스크롤
@@ -386,4 +343,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // Initialize page after defining all functions
+    initializeElements();
 }); 
