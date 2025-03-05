@@ -176,50 +176,42 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Form handling setup function
     function setupFormHandling() {
-        console.debug('Setting up form handling with loading indicator');
+        const signupForm = document.getElementById('signup-form');
         const loadingIndicator = document.getElementById('loading-indicator');
         const successMessage = document.querySelector('.success-message');
         
-        // Phone number validation function
-        function isValidPhoneNumber(phone) {
-            // 01012345678 format (11 digits starting with 010)
-            const phoneRegex = /^010\d{8}$/;
-            return phoneRegex.test(phone);
-        }
-        
-        // Form submission handler
         if (signupForm) {
             signupForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
-                // Get input values
-                const email = emailInput ? emailInput.value.trim() : '';
-                const phone = phoneInput ? phoneInput.value.trim() : '';
+                // Show loading indicator
+                loadingIndicator.style.display = 'flex';
                 
-                // Check if at least one contact method is provided
-                if (!email && !phone) {
-                    const lang = document.documentElement.getAttribute('lang') === 'zh-CN' ? 'zh' : 'ko';
-                    const requiredFieldMsg = lang === 'zh' ? 
-                        '请至少填写一项联系方式' : 
-                        '연락처 중 하나는 반드시 입력해주세요';
-                    alert(requiredFieldMsg);
+                // Track form submission - use fallback if Clarity is blocked
+                if (typeof clarity === 'undefined' && window.fallbackAnalytics) {
+                    window.fallbackAnalytics.trackEvent('Form', 'Submit');
+                }
+                
+                // Form validation
+                const emailInput = document.getElementById('email');
+                const phoneInput = document.getElementById('phone');
+                
+                // Validate phone number (required)
+                if (!isValidPhoneNumber(phoneInput.value)) {
+                    loadingIndicator.style.display = 'none';
+                    alert(currentLanguage === 'ko' 
+                        ? '유효한 전화번호를 입력해주세요'
+                        : '请输入有效的电话号码');
                     return;
                 }
                 
                 // Validate email if provided
-                if (email && !isValidEmail(email)) {
-                    const errorMsg = emailInput.dataset.errorMessage;
-                    alert(errorMsg);
+                if (emailInput.value && !isValidEmail(emailInput.value)) {
+                    loadingIndicator.style.display = 'none';
+                    alert(currentLanguage === 'ko' 
+                        ? '유효한 이메일 주소를 입력해주세요'
+                        : '请输入有效的电子邮件地址');
                     return;
-                }
-                
-                // Validate phone if provided
-                if (phone) {
-                    if (!isValidPhoneNumber(phone)) {
-                        const formatErrorMsg = phoneInput.dataset.formatErrorMessage;
-                        alert(formatErrorMsg);
-                        return;
-                    }
                 }
                 
                 // Form is valid, show loading indicator

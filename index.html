@@ -27,6 +27,38 @@
             t.crossOrigin="anonymous";
             y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
         })(window, document, "clarity", "script", "qit4tv01rp");
+        
+        // Check if Clarity is blocked
+        setTimeout(function() {
+            if (typeof clarity === 'undefined') {
+                console.log('Clarity appears to be blocked. Using fallback analytics.');
+                // Initialize fallback analytics
+                window.fallbackAnalytics = {
+                    pageView: function() {
+                        const event = {
+                            type: 'pageview',
+                            path: window.location.pathname,
+                            timestamp: new Date().toISOString()
+                        };
+                        console.log('Fallback Analytics:', event);
+                        // You could store these locally or send to your own endpoint
+                        // that isn't blocked by ad blockers
+                    },
+                    trackEvent: function(category, action) {
+                        const event = {
+                            type: 'event',
+                            category: category,
+                            action: action,
+                            timestamp: new Date().toISOString()
+                        };
+                        console.log('Fallback Analytics:', event);
+                    }
+                };
+                
+                // Track initial page view
+                window.fallbackAnalytics.pageView();
+            }
+        }, 2000); // Check after 2 seconds to give Clarity time to load
     </script>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -255,7 +287,7 @@
                 <a href="#"><i class="fab fa-weibo"></i></a>
                 <a href="#"><i class="fab fa-qq"></i></a>
             </div>
-            <div id="tracker-display" style="position: fixed; bottom: 5px; right: 5px; font-size: 0; opacity: 0; color: transparent; z-index: -1; visibility: hidden; display: none;">V: 0 | C: 0</div>
+            <div id="tracker-display" style="position: fixed; bottom: 5px; right: 5px; font-size: 10px; background: rgba(0,0,0,0.15); color: white; padding: 3px; border-radius: 3px; width: 16px; overflow: hidden; cursor: pointer;">📊</div>
         </div>
     </footer>
 
@@ -276,24 +308,36 @@
             // CORS proxy to avoid cross-origin issues
             const CORS_PROXY = 'https://corsproxy.io/?';
             
+            // Track current stats
+            let currentVisits = 0;
+            let currentClicks = 0;
+            
+            // Tracker is initially hidden/collapsed
+            let isExpanded = false;
+            
             // Function to fetch and update counts
             async function updateCounts() {
                 try {
                     // Get visit count first
                     const visitResponse = await fetch(`${CORS_PROXY}https://api.countapi.xyz/hit/${NAMESPACE}/${VISIT_KEY}`);
                     const visitData = await visitResponse.json();
+                    currentVisits = visitData.value;
                     
                     // Get click count
                     const clickResponse = await fetch(`${CORS_PROXY}https://api.countapi.xyz/get/${NAMESPACE}/${CLICK_KEY}`);
                     const clickData = await clickResponse.json();
+                    currentClicks = clickData.value || 0;
                     
-                    // Update display
-                    if (trackerDisplay) {
-                        trackerDisplay.textContent = `V: ${visitData.value} | C: ${clickData.value || 0}`;
+                    // Update display only if expanded
+                    if (isExpanded && trackerDisplay) {
+                        trackerDisplay.textContent = `Visits: ${currentVisits} | Clicks: ${currentClicks}`;
                     }
                 } catch (error) {
                     console.error('Error fetching counts:', error);
-                    // Silently fail on error - don't affect user experience
+                    if (isExpanded && trackerDisplay) {
+                        trackerDisplay.textContent = 'API Error';
+                        trackerDisplay.style.backgroundColor = 'rgba(255,0,0,0.5)';
+                    }
                 }
             }
             
@@ -305,16 +349,42 @@
                         // Increment click count when form is submitted
                         const response = await fetch(`${CORS_PROXY}https://api.countapi.xyz/hit/${NAMESPACE}/${CLICK_KEY}`);
                         const data = await response.json();
+                        currentClicks = data.value;
                         
-                        // Update display immediately after click
-                        if (trackerDisplay) {
-                            const visitCount = parseInt(trackerDisplay.textContent.split('|')[0].replace('V:', '').trim());
-                            trackerDisplay.textContent = `V: ${visitCount} | C: ${data.value}`;
+                        // Update display if expanded
+                        if (isExpanded && trackerDisplay) {
+                            trackerDisplay.textContent = `Visits: ${currentVisits} | Clicks: ${currentClicks}`;
+                            // Flash the counter to show it updated
+                            trackerDisplay.style.backgroundColor = 'rgba(0,255,0,0.5)';
+                            setTimeout(() => {
+                                trackerDisplay.style.backgroundColor = 'rgba(0,0,0,0.15)';
+                            }, 1000);
                         }
                     } catch (error) {
                         console.error('Error updating click count:', error);
-                        // Silently fail on error - don't affect user experience
+                        if (isExpanded && trackerDisplay) {
+                            trackerDisplay.textContent = 'API Error';
+                            trackerDisplay.style.backgroundColor = 'rgba(255,0,0,0.5)';
+                        }
                     }
+                });
+            }
+            
+            // Toggle display when clicked
+            if (trackerDisplay) {
+                trackerDisplay.addEventListener('click', function() {
+                    if (isExpanded) {
+                        // Collapse
+                        trackerDisplay.style.width = '16px';
+                        trackerDisplay.style.padding = '3px';
+                        trackerDisplay.textContent = '📊';
+                    } else {
+                        // Expand
+                        trackerDisplay.style.width = 'auto';
+                        trackerDisplay.style.padding = '3px 8px';
+                        trackerDisplay.textContent = `Visits: ${currentVisits} | Clicks: ${currentClicks}`;
+                    }
+                    isExpanded = !isExpanded;
                 });
             }
             
